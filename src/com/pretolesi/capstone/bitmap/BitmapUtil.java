@@ -3,6 +3,7 @@ package com.pretolesi.capstone.bitmap;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.widget.ImageView;
 
 public class BitmapUtil {
 
@@ -18,8 +19,13 @@ public class BitmapUtil {
         System.out.println("Singleon using static initialization in Java");
     }
 */
+    public void loadAsyncBitmapFromFile(String pathName, ImageView imageView) 
+    {
+    	BitmapFromFileWorkerTask task = new BitmapFromFileWorkerTask(imageView);
+        task.execute(pathName);
+    }
     
-    public Bitmap decodeSampledBitmapFromResource(String pathName, int reqWidth, int reqHeight) {
+    public Bitmap loadSyncBitmapFromFile(String pathName, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -34,7 +40,7 @@ public class BitmapUtil {
         return BitmapFactory.decodeFile(pathName, options);
     }
 
-    public Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
+    public Bitmap loadSyncBitmapFromResource(Resources res, int resId,
             int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions

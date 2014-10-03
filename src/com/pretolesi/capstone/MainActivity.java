@@ -1,9 +1,15 @@
 package com.pretolesi.capstone;
 
+import com.pretolesi.capstone.bitmap.BitmapFromFileWorkerTask;
+import com.pretolesi.capstone.bitmap.BitmapUtil;
+
 import android.support.v7.app.ActionBarActivity;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +18,16 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        
+        ImageView imageView1 = (ImageView)findViewById(R.id.imageView1);
+
+        Uri u = Uri.parse("file:///storage/emulated/0/Pictures/MyCameraApp/IMG_20140930_120803.jpg");
+		String str = u.getPath();
+
+//		Bitmap bmp = BitmapUtil.getInstance().loadBitmapFromFile(str,100,100);
+		BitmapUtil.getInstance().loadAsyncBitmapFromFile(str, imageView1);		
+//        imageView1.setImageBitmap(bmp);
+        		
     }
 
 
