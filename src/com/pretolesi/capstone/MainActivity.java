@@ -1,6 +1,6 @@
 package com.pretolesi.capstone;
 
-import com.pretolesi.capstone.bitmap.BitmapFromFileWorkerTask;
+
 import com.pretolesi.capstone.bitmap.BitmapUtil;
 
 import android.support.v7.app.ActionBarActivity;
@@ -25,7 +25,7 @@ public class MainActivity extends ActionBarActivity {
 		String str = u.getPath();
 
 //		Bitmap bmp = BitmapUtil.getInstance().loadBitmapFromFile(str,100,100);
-		BitmapUtil.getInstance().loadAsyncBitmapFromFile(str, imageView1);		
+		BitmapUtil.getInstance().loadAsyncBitmapFromFile(this.getApplicationContext(),R.drawable.ic_launcher, str,100,100, imageView1);		
 //        imageView1.setImageBitmap(bmp);
         		
     }
