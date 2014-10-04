@@ -1,11 +1,14 @@
 package com.pretolesi.capstone;
 
 
+import java.lang.ref.WeakReference;
+
 import com.pretolesi.capstone.bitmap.BitmapUtil;
 
 import android.support.v7.app.ActionBarActivity;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,9 +27,10 @@ public class MainActivity extends ActionBarActivity {
         Uri u = Uri.parse("file:///storage/emulated/0/Pictures/MyCameraApp/IMG_20140930_120803.jpg");
 		String str = u.getPath();
 
-//		Bitmap bmp = BitmapUtil.getInstance().loadBitmapFromFile(str,100,100);
-		BitmapUtil.getInstance().loadAsyncBitmapFromFile(this.getApplicationContext(),R.drawable.ic_launcher, str,100,100, imageView1);		
-//        imageView1.setImageBitmap(bmp);
+		BitmapUtil.getInstance().setMemoryCache();
+		BitmapUtil.getInstance().loadBitmap(this.getResources(), R.drawable.place_holder, R.drawable.test, imageView1,100,100);
+		//Bitmap bmp = BitmapUtil.getInstance().decodeSampledBitmapFromResource(this.getResources(), R.drawable.test, 100, 100);
+        //imageView1.setImageBitmap(bmp);
         		
     }
 
@@ -49,4 +53,5 @@ public class MainActivity extends ActionBarActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+       
 }
