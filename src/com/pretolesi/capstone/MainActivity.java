@@ -1,17 +1,24 @@
 package com.pretolesi.capstone;
 
 
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.pretolesi.capstone.bitmap.BitmapUtil;
 
 import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 
 
@@ -29,10 +36,25 @@ public class MainActivity extends ActionBarActivity {
 
 		BitmapUtil.getInstance().setMemoryCache();
 		BitmapUtil.getInstance().loadBitmap(this.getResources(), R.drawable.place_holder, R.drawable.test, imageView1,100,100);
+		
+        final Button button1 = (Button) findViewById(R.id.button1);
+        
+        button1.setOnClickListener(new OnClickListener() 
+        {
+			@Override
+			public void onClick(View v) 
+			{
+				Intent intent = new Intent(MainActivity.this, DataToSendListActivity.class);
+				startActivity(intent);
+				
+			}
+		}
+        );		 
 		//Bitmap bmp = BitmapUtil.getInstance().decodeSampledBitmapFromResource(this.getResources(), R.drawable.test, 100, 100);
         //imageView1.setImageBitmap(bmp);
         		
     }
+
 
 
     @Override
