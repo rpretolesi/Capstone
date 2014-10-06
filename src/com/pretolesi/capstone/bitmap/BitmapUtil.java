@@ -31,6 +31,14 @@ public class BitmapUtil
         return LazyHolder.INSTANCE;
     }
 
+    // Placeholder Image
+    private Bitmap m_bmpPlaceHolderBitmap = null;
+    
+    public void setPlaceHolder (Bitmap bmpPlaceHolderBitmap) 
+    {
+    	m_bmpPlaceHolderBitmap = bmpPlaceHolderBitmap;
+    }
+    
     // Cache on memory
     private LruCache<String, Bitmap> mMemoryCache = null;
     
@@ -156,55 +164,13 @@ public class BitmapUtil
         protected Bitmap doInBackground(Integer... params) 
         {
             data = params[0];
-            
-            try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            
+         
             final Bitmap bitmap = decodeSampledBitmapFromResource(resourcesReference.get(), data, reqWidth, reqHeight);
             addBitmapToMemoryCache(String.valueOf(params[0]), bitmap);
 
             return bitmap;
         }
-/*        
-        @Override
-        protected Bitmap doInBackground(Integer... params) 
-        {
-            data = params[0];
-            
-            try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            return decodeSampledBitmapFromResource(resourcesReference.get(), data, reqWidth, reqHeight);
-        }        
- 
-     protected Bitmap doInBackground(Integer... params) {
-        final Bitmap bitmap = decodeSampledBitmapFromResource(
-                getResources(), params[0], 100, 100));
-        addBitmapToMemoryCache(String.valueOf(params[0]), bitmap);
-        return bitmap;
-    }
-    
-        // Once complete, see if ImageView is still around and set bitmap.
-        @Override
-        protected void onPostExecute(Bitmap bitmap) 
-        {
-            if (imageViewReference != null && bitmap != null) 
-            {
-                final ImageView imageView = imageViewReference.get();
-                if (imageView != null) 
-                {
-                    imageView.setImageBitmap(bitmap);
-                }
-            }
-        }
-  */
+
         @Override
         protected void onPostExecute(Bitmap bitmap) 
         {
@@ -229,16 +195,14 @@ public class BitmapUtil
     {
         private final WeakReference<ImageView> m_imageViewReference;
         private final WeakReference<Resources> m_resourcesReference;
-        private final WeakReference<BaseAdapter> m_baseAdapterReference;
         private int m_reqWidth, m_reqHeight;
         private String m_strImagePath;
 
-        public BitmapWorkerTaskFromFile(BaseAdapter ba, Resources res, ImageView imageView, int reqWidth, int reqHeight) 
+        public BitmapWorkerTaskFromFile(Resources res, ImageView imageView, int reqWidth, int reqHeight) 
         {
             // Use a WeakReference to ensure the ImageView can be garbage collected
             m_imageViewReference = new WeakReference<ImageView>(imageView);
             m_resourcesReference = new WeakReference<Resources>(res);
-            m_baseAdapterReference = new WeakReference<BaseAdapter>(ba);
             this.m_reqWidth = reqWidth;
             this.m_reqHeight = reqHeight;
         }
@@ -249,15 +213,8 @@ public class BitmapUtil
         {
         	m_strImagePath = params[0];
             
-            try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            
             final Bitmap bitmap = decodeSampledBitmapFromFile(m_resourcesReference.get(), m_strImagePath, m_reqWidth, m_reqHeight);
-            //addBitmapToMemoryCache(String.valueOf(params[0]), bitmap);
+            addBitmapToMemoryCache(String.valueOf(params[0]), bitmap);
 
             return bitmap;
         }
@@ -273,7 +230,6 @@ public class BitmapUtil
             if (m_imageViewReference != null && bitmap != null) 
             {
                 final ImageView imageView = m_imageViewReference.get();
-                final BaseAdapter ba = m_baseAdapterReference.get();
                 final BitmapWorkerTaskFromFile bitmapWorkerTaskFromFile = getBitmapWorkerTaskFromFile(imageView);
                 if (this == bitmapWorkerTaskFromFile && imageView != null) 
                 {
@@ -284,24 +240,7 @@ public class BitmapUtil
         }
     } 
 
-/*    
-    public void loadBitmap(Resources res, int resId, ImageView imageView, int reqWidth, int reqHeight) {
-        BitmapWorkerTask task = new BitmapWorkerTask(res, imageView, reqWidth, reqHeight);
-        task.execute(resId);
-    }
 
-    public void loadBitmap(Resources res, int resPlaceHolderId, int resId, ImageView imageView, int reqWidth, int reqHeight) 
-    {
-        if (cancelPotentialWork(resId, imageView)) 
-        {
-        	final Bitmap mPlaceHolderBitmap = decodeSampledBitmapFromResource(res, resPlaceHolderId, reqHeight, reqHeight);
-            final BitmapWorkerTask task = new BitmapWorkerTask(res, imageView, reqWidth, reqHeight);
-            final AsyncDrawable asyncDrawable = new AsyncDrawable(res, mPlaceHolderBitmap, task);
-            imageView.setImageDrawable(asyncDrawable);
-            task.execute(resId);
-        }
-    }     
-*/    
     public void loadBitmap(Resources res, int resPlaceHolderId, int resId, ImageView imageView, int reqWidth, int reqHeight) 
     {
         final String imageKey = String.valueOf(resId);
@@ -314,22 +253,25 @@ public class BitmapUtil
         {
             if (cancelPotentialWork(resId, imageView)) 
             {
-            	final Bitmap mPlaceHolderBitmap = decodeSampledBitmapFromResource(res, resPlaceHolderId, reqHeight, reqHeight);
                 final BitmapWorkerTask task = new BitmapWorkerTask(res, imageView, reqWidth, reqHeight);
-                final AsyncDrawable asyncDrawable = new AsyncDrawable(res, mPlaceHolderBitmap, task);
+                if(m_bmpPlaceHolderBitmap == null)
+                {
+                	m_bmpPlaceHolderBitmap = decodeSampledBitmapFromResource(res, resPlaceHolderId, reqHeight, reqHeight);
+                }
+                final AsyncDrawable asyncDrawable = new AsyncDrawable(res, m_bmpPlaceHolderBitmap, task);
                 imageView.setImageDrawable(asyncDrawable);
-                task.execute(resId);
+                //task.execute(resId);
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, resId);
             }
         }
         
     }  
     
-    public void loadBitmap(BaseAdapter ba, Resources res, int resPlaceHolderId, String strImagePath, ImageView imageView, int reqWidth, int reqHeight) 
+    public void loadBitmap(Resources res, int resPlaceHolderId, String strImagePath, ImageView imageView, int reqWidth, int reqHeight) 
     {
         final String imageKey = String.valueOf(strImagePath);
-//        final Bitmap bitmap = getBitmapFromMemCache(imageKey);
-        final Bitmap bitmap = null;
-       if (bitmap != null) 
+        final Bitmap bitmap = getBitmapFromMemCache(imageKey);
+        if (bitmap != null) 
         {
         	imageView.setImageBitmap(bitmap);
         } 
@@ -337,17 +279,20 @@ public class BitmapUtil
         {
             if (cancelPotentialWorkFromFile(strImagePath, imageView)) 
             {
-            	final Bitmap mPlaceHolderBitmap = decodeSampledBitmapFromResource(res, resPlaceHolderId, reqHeight, reqHeight);
-                final BitmapWorkerTaskFromFile task = new BitmapWorkerTaskFromFile(ba, res, imageView, reqWidth, reqHeight);
-                final AsyncDrawableFromFile asyncDrawable = new AsyncDrawableFromFile(res, mPlaceHolderBitmap, task);
+                final BitmapWorkerTaskFromFile task = new BitmapWorkerTaskFromFile(res, imageView, reqWidth, reqHeight);
+                if(m_bmpPlaceHolderBitmap == null)
+                {
+                	m_bmpPlaceHolderBitmap = decodeSampledBitmapFromResource(res, resPlaceHolderId, reqHeight, reqHeight);
+                }
+                final AsyncDrawableFromFile asyncDrawable = new AsyncDrawableFromFile(res, m_bmpPlaceHolderBitmap, task);
                 imageView.setImageDrawable(asyncDrawable);
-                task.execute(strImagePath);
+//                task.execute(strImagePath);
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, strImagePath);
             }
         }
-        
     }  
       
-    public boolean cancelPotentialWork(int data, ImageView imageView) 
+    public static boolean cancelPotentialWork(int data, ImageView imageView) 
     {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
@@ -370,8 +315,9 @@ public class BitmapUtil
         return true;
     }
     
-    public boolean cancelPotentialWorkFromFile(String strImagePath, ImageView imageView) 
+    public static boolean cancelPotentialWorkFromFile(String strImagePath, ImageView imageView) 
     {
+   	
         final BitmapWorkerTaskFromFile bitmapWorkerTask = getBitmapWorkerTaskFromFile(imageView);
 
         if (bitmapWorkerTask != null) 
@@ -389,11 +335,12 @@ public class BitmapUtil
                 return false;
             }
         }
+        
         // No task associated with the ImageView, or an existing task was cancelled
         return true;
     }
     
-    private BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) 
+    static private BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) 
     {
 	   if (imageView != null) 
 	   {
@@ -407,12 +354,12 @@ public class BitmapUtil
 	    return null;
 	}
     
-    private BitmapWorkerTaskFromFile getBitmapWorkerTaskFromFile(ImageView imageView) 
+    static private BitmapWorkerTaskFromFile getBitmapWorkerTaskFromFile(ImageView imageView) 
     {
 	   if (imageView != null) 
 	   {
 	       final Drawable drawable = imageView.getDrawable();
-	       if (drawable instanceof AsyncDrawable) 
+	       if (drawable instanceof AsyncDrawableFromFile) 
 	       {
 	           final AsyncDrawableFromFile asyncDrawable = (AsyncDrawableFromFile) drawable;
 	           return asyncDrawable.getBitmapWorkerTaskFromFile();
@@ -421,7 +368,7 @@ public class BitmapUtil
 	    return null;
 	}
     
-    class AsyncDrawable extends BitmapDrawable 
+    static class AsyncDrawable extends BitmapDrawable 
     {
         private final WeakReference<BitmapWorkerTask> m_bitmapWorkerTaskReference;
 
@@ -437,7 +384,7 @@ public class BitmapUtil
         }
     }    
     
-    class AsyncDrawableFromFile extends BitmapDrawable 
+    static class AsyncDrawableFromFile extends BitmapDrawable 
     {
         private final WeakReference<BitmapWorkerTaskFromFile> m_bitmapWorkerTaskReference;
 

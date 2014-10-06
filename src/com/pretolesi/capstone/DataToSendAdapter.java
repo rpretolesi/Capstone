@@ -64,7 +64,7 @@ public class DataToSendAdapter extends BaseAdapter
 
         DataToSendModel dtsm = getItem(position);
         //bananaView = dtsm.getImageView();
-		BitmapUtil.getInstance().loadBitmap(this, context.getResources(), R.drawable.place_holder, dtsm.getImageUrl(), ivImageView,100,100);
+		BitmapUtil.getInstance().loadBitmap(context.getResources(), R.drawable.place_holder, dtsm.getImageUrl(), ivImageView,100,100);
 
         tvTextView.setText(dtsm.getImageDescriptione());
 
