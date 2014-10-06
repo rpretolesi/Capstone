@@ -53,8 +53,10 @@ public class DataToSendAdapter extends BaseAdapter
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
+    public View getView(int position, View convertView, ViewGroup parent) 
+    {
+        if (convertView == null) 
+        {
             convertView = LayoutInflater.from(context)
               .inflate(R.layout.data_to_send_list_activity, parent, false);
         }
@@ -63,23 +65,12 @@ public class DataToSendAdapter extends BaseAdapter
         TextView tvTextView = ViewHolder.get(convertView, R.id.textViewToSend);
 
         DataToSendModel dtsm = getItem(position);
-        //bananaView = dtsm.getImageView();
+
 		BitmapUtil.getInstance().loadBitmap(context.getResources(), R.drawable.place_holder, dtsm.getImageUrl(), ivImageView,100,100);
 
         tvTextView.setText(dtsm.getImageDescriptione());
 
         return convertView;
-        }
- /*   
-    private static class ViewHolder {
-        public final ImageView m_ivImageView;
-        public final TextView m_tvImageDescription;
-
-        public ViewHolder(ImageView ivImageView, TextView tvImageDescription) {
-            this.m_ivImageView = ivImageView;
-            this.m_tvImageDescription = tvImageDescription;
-        }
+        
     }
-*/    
-
 }

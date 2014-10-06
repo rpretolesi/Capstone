@@ -260,8 +260,8 @@ public class BitmapUtil
                 }
                 final AsyncDrawable asyncDrawable = new AsyncDrawable(res, m_bmpPlaceHolderBitmap, task);
                 imageView.setImageDrawable(asyncDrawable);
-                //task.execute(resId);
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, resId);
+                task.execute(resId);
+//                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, resId);
             }
         }
         
@@ -286,8 +286,8 @@ public class BitmapUtil
                 }
                 final AsyncDrawableFromFile asyncDrawable = new AsyncDrawableFromFile(res, m_bmpPlaceHolderBitmap, task);
                 imageView.setImageDrawable(asyncDrawable);
-//                task.execute(strImagePath);
-                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, strImagePath);
+                task.execute(strImagePath);
+//                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, strImagePath);
             }
         }
     }  
